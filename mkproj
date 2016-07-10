@@ -1,0 +1,80 @@
+#!/bin/bash
+lang=$1
+projectname=$2 
+
+mk_dir()
+{
+	mkdir $projectname
+	cd  $projectname
+}
+
+mk_files()
+{
+	case $lang in
+		md|markdown)
+			SRC=$projectname".md"
+			touch $SRC
+			TARGET=$projectname".html"
+			echo "SRC="$SRC > Makefile
+			echo "TARGET="$TARGET >> Makefile
+			echo -e "\$(TARGET):\$(SRC)" >> Makefile
+			echo -e "\t" "markdown \$(SRC) > \$(TARGET)" >> Makefile
+			;;
+		cpp)
+			;;
+		c)
+			SRC="main.c"
+			OBJ=
+			touch $SRC
+			TARGET="main"
+			echo "SRC="$SRC > Makefile
+			echo "TARGET="$TARGET >> Makefile
+			echo -e "\$(TARGET):\$(SRC)" >> Makefile
+			echo -e "\t" "gcc \$(SRC) -o \$(TARGET)" >> Makefile
+			;;
+        cv)
+            touch $projectname".cpp"
+            echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
+            echo "project( $projectname )" >> CMakeLists.txt
+            echo "aux_source_directory(. DIR_SRCS)" >> CMakeLists.txt
+            echo "find_package( OpenCV REQUIRED )" >> CMakeLists.txt
+            echo 'include_directories( ${OpenCV_INCLUDE_DIRS} )' >> CMakeLists.txt
+            echo 'add_executable( '$projectname' ${DIR_SRCS} )' >> CMakeLists.txt
+            echo 'target_link_libraries( '$projectname' ${OpenCV_LIBS} )' >> CMakeLists.txt
+
+            ;;
+
+        cvmake)
+            cd ..
+            rmdir $projectname
+            echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
+            echo "project( $projectname )" >> CMakeLists.txt
+            echo "aux_source_directory(. DIR_SRCS)" >> CMakeLists.txt
+            echo "find_package( OpenCV REQUIRED )" >> CMakeLists.txt
+            echo 'include_directories( ${OpenCV_INCLUDE_DIRS} )' >> CMakeLists.txt
+            echo 'add_executable( '$projectname' ${DIR_SRCS} )' >> CMakeLists.txt
+            echo 'target_link_libraries( '$projectname' ${OpenCV_LIBS} )' >> CMakeLists.txt
+            ;;
+        *)
+            echo "Language:$lang hasn't been supported."
+            exit 1
+            ;;
+    esac
+
+}
+
+if (( $# != 2 )); then
+    echo Usage: $0 language project-name
+else
+
+    case $lang in
+        markdown|md|cpp|c|cv|cvmake)
+            mk_dir
+            mk_files
+            ;;
+        *)
+            echo "Language:$lang hasn't been supported."
+            exit 1
+            ;;
+    esac
+fi

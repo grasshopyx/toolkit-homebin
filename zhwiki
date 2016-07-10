@@ -1,0 +1,3 @@
+#!/bin/bash
+word=$1
+open -a google\ chrome http://zh.wikipedia.org/zh/special:search/$word
