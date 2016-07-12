@@ -1,0 +1,4 @@
+#!/bin/bash
+word=$1
+open -a google\ chrome http://www.behindthename.com/name/$word
+
